@@ -6,7 +6,7 @@ app.use(express.json())
 const port = 3000
 
 app.get('/posts', async (req, res) => {
-  const publicaciones = getAllPosts()
+  const publicaciones = await getAllPosts()
   res.status(200).json(publicaciones)
 })
 
