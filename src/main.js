@@ -1,10 +1,32 @@
 import express from 'express'
 import {createPost, getAllPosts, getPostID, modificarPost, eliminarPost} from './db.js'
-
+import fs from 'fs';
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 
 const app = express()
 app.use(express.json())
+
 const port = 3000
+
+const options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Gravity Falls', 
+        version: '1.0.0', 
+        description: 'Documentación de Gravity Falls', 
+      },
+    },
+    apis: ['src/main.js'], 
+  };
+  
+  const swagg = swaggerJsdoc(options)
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagg));
+
+
+
 
 const vEndPoint = (req, res, next) => {
     const endpointsPermitidos = ['/posts', '/posts/:id'];
@@ -24,8 +46,6 @@ const vEndPoint = (req, res, next) => {
     }
     next(err);
   });
-
- 
  
   const vStructure = (req, res, next) => {
     if ((req.method === 'PUT' || req.method === 'POST') && !req.is('application/json')) {
@@ -44,8 +64,9 @@ const vEndPoint = (req, res, next) => {
     }
     next(err);
   });
-   
+  
 
+  
   app.all('*', (req, res) => {
     res.status(501).json({ error: "El método HTTP no se implementó :(" });
   });  
