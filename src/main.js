@@ -6,7 +6,47 @@ const app = express()
 app.use(express.json())
 const port = 3000
 
-app.all('*', (req, res) => {
+const vEndPoint = (req, res, next) => {
+    const endpointsPermitidos = ['/posts', '/posts/:id'];
+    if (!endpointsPermitidos.includes(req.path)) {
+      const error = new Error('El endpoint no existe :(');
+      error.status = 400;
+      return next(error);
+    }
+    next();
+  };
+  
+  app.use(vEndPoint);
+  
+  app.use((err, req, res, next) => {
+    if (err.status === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    next(err);
+  });
+
+ 
+ 
+  const vStructure = (req, res, next) => {
+    if ((req.method === 'PUT' || req.method === 'POST') && !req.is('application/json')) {
+      const error = new Error('Datos incorrectos debe de ser un JSON :/');
+      error.status = 400;
+      return next(error);
+    }
+    next();
+  };
+  
+  app.use(vStructure);
+  
+  app.use((err, req, res, next) => {
+    if (err.status === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    next(err);
+  });
+   
+
+  app.all('*', (req, res) => {
     res.status(501).json({ error: "El método HTTP no se implementó :(" });
   });  
 
@@ -72,6 +112,9 @@ app.delete('/posts/:postId', async (req, res) => {
         res.status(500).send("Error contactando la base de datos/código :(")
     }
 })
+
+
+  
 
 app.listen(port, () => {
   console.log(`Server listening at http://127.0.0.1:${port}`)
