@@ -4,10 +4,13 @@ import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 
+
+
 const app = express()
 app.use(express.json())
-
 const port = 3000
+
+
 
 const options = {
     definition: {
@@ -47,6 +50,8 @@ const vEndPoint = (req, res, next) => {
     next(err);
   });
  
+
+
   const vStructure = (req, res, next) => {
     if ((req.method === 'PUT' || req.method === 'POST') && !req.is('application/json')) {
       const error = new Error('Datos incorrectos debe de ser un JSON :/');
@@ -65,11 +70,92 @@ const vEndPoint = (req, res, next) => {
     next(err);
   });
   
-
+/**
+ * @swagger
+ * /posts:
+ *   get:
+ *     summary: Manda a traer todos los posts
+ *     description: Endpoint que va a traer los posts
+ *     responses:
+ *       '200':
+ *         description: Proceso exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                   content:
+ *                     type: string
+ *                   created:
+ *                     type: string
+ *                   nombre:
+ *                     type: string
+ *                   tipo:
+ *                     type: string
+ *       '500':
+ *         description: No se pudieron traer los posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+app.get('/posts', async (req, res) => {
+    try {
+      const publicaciones = await getAllPosts();
+      res.status(200).json(publicaciones);
+    } catch (error) {
+      res.status(500).json({ message: "Error contactando la base de datos/código :(" });
+    }
+  });
   
-  app.all('*', (req, res) => {
-    res.status(501).json({ error: "El método HTTP no se implementó :(" });
-  });  
+  /**
+   * @swagger
+   * /posts/{postId}:
+   *   get:
+   *     summary: Manda a traer un post específico
+   *     description: Endpoint que va a traer un post por su ID
+   *     parameters:
+   *       - in: path
+   *         name: postId
+   *         required: true
+   *         description: ID del post a traer
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Proceso exitoso
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 title:
+   *                   type: string
+   *                 content:
+   *                   type: string
+   *                 created:
+   *                   type: string
+   *                 nombre:
+   *                   type: string
+   *                 tipo:
+   *                   type: string
+   *       '500':
+   *         description: No se pudo traer el post
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   */
 
 app.get('/posts', async (req, res) => {
     try {
@@ -79,6 +165,48 @@ app.get('/posts', async (req, res) => {
         res.status(500).send("Error contactando la base de datos/código :(")
     }
 })
+
+/**
+ * @swagger
+ * /posts/{postId}:
+ *   get:
+ *     summary: Manda a traer un post específico
+ *     description: Endpoint que va a traer un post por su ID
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         description: ID del post a traer
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Proceso exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 created:
+ *                   type: string
+ *                 nombre:
+ *                   type: string
+ *                 tipo:
+ *                   type: string
+ *       '500':
+ *         description: No se pudo traer el post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 
 app.get('/posts/:postId', async (req, res) => {
     const id = req.params.postId;
@@ -90,6 +218,56 @@ app.get('/posts/:postId', async (req, res) => {
     }
     
 })
+
+/**
+ * @swagger
+ * /posts:
+ *   post:
+ *     summary: Crea un nuevo post
+ *     description: Endpoint para crear un nuevo post
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               nombre:
+ *                 type: string
+ *               tipo:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Proceso exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 created:
+ *                   type: string
+ *                 nombre:
+ *                   type: string
+ *                 tipo:
+ *                   type: string
+ *       '500':
+ *         description: No se pudo crear el post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 
 app.post('/posts', async (req, res) => {
     const body = req.body
@@ -106,6 +284,63 @@ app.post('/posts', async (req, res) => {
         res.status(500).send("Error contactando la base de datos/código :(")
     }
 })
+
+/**
+ * @swagger
+ * /posts/{postId}:
+ *   put:
+ *     summary: Modifica un post existente
+ *     description: Endpoint para modificar un post existente por su ID
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         description: ID del post a modificar
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               nombre:
+ *                 type: string
+ *               tipo:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Proceso exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 created:
+ *                   type: string
+ *                 nombre:
+ *                   type: string
+ *                 tipo:
+ *                   type: string
+ *       '500':
+ *         description: No se pudo modificar el post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 
 app.put('/posts/:postId', async (req, res) => {
     const id = req.params.postId
@@ -124,6 +359,24 @@ app.put('/posts/:postId', async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /posts/{postId}:
+ *   delete:
+ *     summary: Elimina un post existente
+ *     description: Endpoint para eliminar un post existente por su ID
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         description: ID del post a eliminar
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '204':
+ *         description: Proceso exitoso sin contenido
+ */
+
 app.delete('/posts/:postId', async (req, res) => {
     const id = req.params.postId
     try {
@@ -134,8 +387,10 @@ app.delete('/posts/:postId', async (req, res) => {
     }
 })
 
+app.all('*', (req, res) => {
+    res.status(501).json({ error: "El método HTTP no se implementó :(" });
+  });  
 
-  
 
 app.listen(port, () => {
   console.log(`Server listening at http://127.0.0.1:${port}`)
