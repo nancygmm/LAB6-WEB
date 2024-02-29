@@ -1,5 +1,5 @@
 import express from 'express'
-import {createPost, getAllPosts, getPostID} from './db.js'
+import {createPost, getAllPosts, getPostID, modificarPost, eliminarPost} from './db.js'
 
 
 const app = express()
@@ -27,6 +27,25 @@ app.post('/posts', async (req, res) => {
     const tipo = body.tipo
     const create = await createPost(titulo, contenido, created, nombre, tipo)
     res.status(200).json(body)
+})
+
+app.put('/posts/:postId', async (req, res) => {
+    const id = req.params.postId
+    const info =req.body
+    const titulo = info.title
+    const contenido = info.content
+    let hora = new Date()
+    const created = hora.toISOString().slice(0, 19).replace('T', ' ')
+    const nombre = info.nombre
+    const tipo = info.tipo
+    const poner = await modificarPost(id, titulo, contenido, created, nombre, tipo)
+    res.status(200).json(info)
+})
+
+app.delete('/posts/:postId', async (req, res) => {
+    const id = req.params.postId
+    const quitar = await eliminarPost(id)
+    res.status(204)
 })
 
 app.listen(port, () => {
