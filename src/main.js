@@ -1,5 +1,6 @@
 import express from 'express'
-import {getAllPosts} from './db.js'
+import {createPost, getAllPosts, getPostID} from './db.js'
+
 
 const app = express()
 app.use(express.json())
@@ -8,6 +9,24 @@ const port = 3000
 app.get('/posts', async (req, res) => {
   const publicaciones = await getAllPosts()
   res.status(200).json(publicaciones)
+})
+
+app.get('/posts/:postId', async (req, res) => {
+    const id = req.params.postId;
+    const publicacionID = await getPostID(id)
+    res.status(200).json(publicacionID)
+})
+
+app.post('/posts', async (req, res) => {
+    const body = req.body
+    const titulo = body.title
+    const contenido = body.content
+    let hora = new Date()
+    const created = hora.toISOString().slice(0, 19).replace('T', ' ')
+    const nombre = body.nombre
+    const tipo = body.tipo
+    const create = await createPost(titulo, contenido, created, nombre, tipo)
+    res.status(200).json(body)
 })
 
 app.listen(port, () => {
