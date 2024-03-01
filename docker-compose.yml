@@ -10,6 +10,15 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: 123456789
             MYSQL_DATABASE: gravity_falls
+    app:
+        build: .
+        depends_on:
+            - mysql
+        links:
+            - mysql
+        ports:
+            - 3000:3000
 volumes:
     mysql-data:
         driver: "local"
+
