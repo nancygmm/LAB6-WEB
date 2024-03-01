@@ -1,8 +1,8 @@
 import mysql from 'mysql2/promise';
 
 const pool = mysql.createPool({
-  host: 'localhost',
-  port: 33069,
+  host: 'mysql',
+  port: 3306,
   user: 'root',
   password: '123456789',
   database: 'gravity_falls',
