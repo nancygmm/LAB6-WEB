@@ -273,6 +273,7 @@ app.post('/posts', async (req, res) => {
     const create = await createPost(titulo, contenido, created, nombre, tipo);
     res.status(200).json(body);
   } catch (error) {
+    console.log(error)
     res.status(500).send('Error contactando la base de datos/código :(');
   }
 });
