@@ -4,7 +4,7 @@ services:
     mysql:
         build: ./dockerfiles/mysql
         ports:
-            - "33075:3306"
+            - "3302:3306"
         volumes:
             - "mysql-data:/var/lib/mysql"
         environment:
