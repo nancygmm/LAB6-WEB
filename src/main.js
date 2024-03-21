@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -8,6 +9,7 @@ import {
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 const port = 3000;
 
 const options = {
